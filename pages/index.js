@@ -1,65 +1,103 @@
 import Head from 'next/head'
 import styles from '../styles/Home.module.css'
+import { gql, useMutation } from '@apollo/client'
+import { useState } from "react"
+import Link from "next/link"
+import { PrismaClient } from "@prisma/client"
+import AddTaskModal from "../Components/addTaskModal"
 
-export default function Home() {
+
+const DeleteTask = gql`
+  mutation DeleteTask($id: ID!) {
+    deleteTask(id: $id)
+  }
+`
+
+export default function Home({ initialTasks }) {
+  const [deleteTask] = useMutation(DeleteTask)
+  const [tasks, setTasks] = useState(initialTasks)
+  const [modal, setModal] = useState(false)
+
+  const newTaskHandler = (task) => {
+    setTasks([
+      task,
+      ...tasks,
+    ])
+    setModal(false)
+  }
+
+  const removeEntry = (id, e) => {
+    e.stopPropagation()
+    deleteTask({
+      variables: {
+        id: id
+      }
+    }).then(res => {
+      if (res.data.deleteTask)
+        setTasks(tasks.filter(task => task.id !== id))
+      else
+        alert("Echec de la suppression de la tache")
+    })
+  }
+
   return (
-    <div className={styles.container}>
+    <>
       <Head>
-        <title>Create Next App</title>
-        <link rel="icon" href="/favicon.ico" />
+        <title>TodoList</title>
       </Head>
+      <main
+        className={modal ? styles.mainWithBlur : styles.main}
+        onClick={modal ? () => setModal(false) : null}>
+        <h1 className={styles.title}>Todo List</h1>
 
-      <main className={styles.main}>
-        <h1 className={styles.title}>
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
-        </h1>
+        <div className={styles.container}>
 
-        <p className={styles.description}>
-          Get started by editing{' '}
-          <code className={styles.code}>pages/index.js</code>
-        </p>
+          <div className={styles.grid}>
+            <div
+              className={styles.card}
+              onClick={() => setModal(true)}
+            >
+              <h3>Nouvelle tache</h3>
+              <p>...</p>
+            </div>
 
-        <div className={styles.grid}>
-          <a href="https://nextjs.org/docs" className={styles.card}>
-            <h3>Documentation &rarr;</h3>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
+            {tasks ? tasks.map(task => {
+              return (
+                <Link
+                  href={`/${task.id}`}
+                  key={task.id}
+                >
+                  <div className={styles.card}>
+                    <div>
+                      <h3>{task.title}</h3>
+                      <div style={{ height: "10px", width: "10px", backgroundColor: "red" }} onClick={!modal ? e => removeEntry(task.id, e) : null} />
+                    </div>
+                    <p>{task.description.length > 40 ? task.description.slice(0, 40) + "..." : task.description ?? null}</p>
+                  </div>
+                </Link>)
+            }) : null}
 
-          <a href="https://nextjs.org/learn" className={styles.card}>
-            <h3>Learn &rarr;</h3>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
+          </div>
 
-          <a
-            href="https://github.com/vercel/next.js/tree/master/examples"
-            className={styles.card}
-          >
-            <h3>Examples &rarr;</h3>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
-
-          <a
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-          >
-            <h3>Deploy &rarr;</h3>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
         </div>
-      </main>
 
-      <footer className={styles.footer}>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{' '}
-          <img src="/vercel.svg" alt="Vercel Logo" className={styles.logo} />
-        </a>
-      </footer>
-    </div>
+      </main>
+      {modal ? <AddTaskModal
+        newTaskHandler={newTaskHandler}
+      />
+        : null}
+    </>
   )
+}
+
+
+export async function getServerSideProps({ params }) {
+  const prisma = new PrismaClient()
+  const initData = await prisma.tasks.findMany()
+
+  return {
+    props: {
+      initialTasks: initData.reverse()
+    }
+  }
 }

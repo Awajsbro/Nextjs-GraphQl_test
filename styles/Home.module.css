@@ -1,38 +1,83 @@
-.container {
-  min-height: 100vh;
-  padding: 0 0.5rem;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
-
 .main {
-  padding: 5rem 0;
-  flex: 1;
+  height: 100%;
+  position: absolute;
   display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+.mainWithBlur {
+  height: 100%;
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  filter:blur(5px)
+}
+
+.container {
+  height: 100%;
+  display: flex;
+  min-height: 10vh;
   flex-direction: column;
   justify-content: center;
   align-items: center;
 }
 
-.footer {
-  width: 100%;
-  height: 100px;
-  border-top: 1px solid #eaeaea;
+.grid {
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  overflow: auto;
+  height: 100%;
+  padding: 40px 0;
+  background-color: #121212;
 }
 
-.footer img {
-  margin-left: 0.5rem;
+.card {
+  background-color: #2e2e2e;
+  margin: 1rem;
+  flex-basis: 45%;
+  padding: 1.5rem;
+  text-align: left;
+  color: inherit;
+  text-decoration: none;
+  border: 1px solid #eaeaea;
+  border-radius: 10px;
+  transition: color 0.15s ease, border-color 0.15s ease;
 }
 
-.footer a {
+.modalAddTask {
   display: flex;
-  justify-content: center;
+  position: fixed;
   align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  padding: 40px;
+  border: white 1px solid;
+  border-radius: 25px;
+  background-color: #2e2e2e;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.titleTaskInput {
+  width: 500px;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid whitesmoke
+}
+
+.descriptionTaskArea {
+  height: 200px;
+  width: 500px;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid whitesmoke;
+  margin: 10px 0;
 }
 
 .title a {
@@ -47,14 +92,18 @@
 }
 
 .title {
+  height: 10vh;
+  width: 100%;
   margin: 0;
+  position: sticky;
+  top: 0;
   line-height: 1.15;
   font-size: 4rem;
-}
-
-.title,
-.description {
-  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-bottom: 1px white solid;
+  background-color: #2e2e2e;
 }
 
 .description {
@@ -71,26 +120,6 @@
     Bitstream Vera Sans Mono, Courier New, monospace;
 }
 
-.grid {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-wrap: wrap;
-  max-width: 800px;
-  margin-top: 3rem;
-}
-
-.card {
-  margin: 1rem;
-  flex-basis: 45%;
-  padding: 1.5rem;
-  text-align: left;
-  color: inherit;
-  text-decoration: none;
-  border: 1px solid #eaeaea;
-  border-radius: 10px;
-  transition: color 0.15s ease, border-color 0.15s ease;
-}
 
 .card:hover,
 .card:focus,
